@@ -8,6 +8,12 @@ function App() {
       <div className="container">
         <header className="mb-3">
           <h1>WooCommerce Product Bundle JSON Generator</h1>
+          <p>
+            Use this form to create JSON for product imports that use
+            WooCommerce Product Bundles. The idea is to have a friendly UI to
+            create your bundled products and then simply copy and paste into the
+            column <pre>Bundled Items (JSON-encoded)</pre> in your .csv.
+          </p>
         </header>
         <main>
           <ProductForm />
