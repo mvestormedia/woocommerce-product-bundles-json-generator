@@ -78,12 +78,12 @@ class ProductForm extends Component {
     }
 
     if (input.name === "qty") {
-      product.meta_data.quantity_min = value;
-      product.meta_data.quantity_max = value;
+      product.meta_data.quantity_min = parseInt(value);
+      product.meta_data.quantity_max = parseInt(value);
     }
 
     if (input.name === "discount") {
-      product.meta_data.discount = value;
+      product.meta_data.discount = parseFloat(value);
     }
 
     allProducts[index] = {
