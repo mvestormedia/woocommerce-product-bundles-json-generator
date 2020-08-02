@@ -4,44 +4,13 @@ import trimStart from "lodash.trimstart";
 import trimEnd from "lodash.trimend";
 
 class ProductForm extends Component {
-  state = {
-    products: [
-      {
-        "1": {
-          product_id: "",
-          menu_order: 0,
-          meta_data: {
-            quantity_min: 1,
-            quantity_max: 1,
-            priced_individually: "yes",
-            shipped_individually: "no",
-            override_title: "no",
-            title: "",
-            override_description: "no",
-            description: "",
-            optional: "no",
-            hide_thumbnail: "yes",
-            discount: "",
-            override_variations: "no",
-            override_default_variation_attributes: "no",
-            single_product_visibility: "visible",
-            cart_visibility: "visible",
-            order_visibility: "visible",
-            single_product_price_visibility: "hidden",
-            cart_price_visibility: "hidden",
-            order_price_visibility: "hidden",
-          },
-        },
-      },
-    ],
-  };
+  constructor() {
+    super();
 
-  handleAddProduct = () => {
-    const products = [...this.state.products];
-    const newProduct = {
-      [products.length + 1]: {
+    this.getProductTemplate = () => {
+      return {
         product_id: "",
-        menu_order: products.length,
+        menu_order: 0,
         meta_data: {
           quantity_min: 1,
           quantity_max: 1,
@@ -63,32 +32,45 @@ class ProductForm extends Component {
           cart_price_visibility: "hidden",
           order_price_visibility: "hidden",
         },
+      };
+    };
+
+    this.state = {
+      products: {
+        "1": this.getProductTemplate(),
       },
     };
-    products.push(newProduct);
+  }
+
+  handleAddProduct = () => {
+    const products = { ...this.state.products };
+    const numProducts = Object.keys(products).length;
+    const newIndex = numProducts + 1;
+    const newProduct = this.getProductTemplate();
+    newProduct.menu_order = numProducts;
+    products[newIndex] = { ...newProduct };
     this.setState({ products });
   };
 
   handleUpdateProduct = ({ currentTarget: input }, index) => {
     const value = input.value;
-    const allProducts = [...this.state.products];
-    const product = allProducts[index][index + 1];
+    const { ...allProducts } = this.state.products;
+    const prodIdx = index + 1;
+    const { ...product } = allProducts[prodIdx];
     if (input.name === "sku") {
       product.product_id = value;
     }
 
     if (input.name === "qty") {
-      product.meta_data.quantity_min = value;
-      product.meta_data.quantity_max = value;
+      product.meta_data.quantity_min = parseInt(value);
+      product.meta_data.quantity_max = parseInt(value);
     }
 
     if (input.name === "discount") {
-      product.meta_data.discount = value;
+      product.meta_data.discount = parseFloat(value);
     }
 
-    allProducts[index] = {
-      [index + 1]: product,
-    };
+    allProducts[prodIdx] = product;
 
     this.setState({ products: allProducts });
   };
@@ -157,17 +139,28 @@ class ProductForm extends Component {
     );
   };
 
+  getProductList = (products) => {
+    const list = Object.keys(products).map((key) => {
+      return {
+        [key]: products[key],
+      };
+    });
+    return list;
+  };
+
   render() {
     const jsonCode = trimEnd(
       trimStart(JSON.stringify(this.state.products), "["),
       "]"
     );
 
+    const products = this.getProductList(this.state.products);
+
     return (
       <Row>
         <Col md="7">
           <Form>
-            {this.state.products.map((product, index) => {
+            {products.map((product, index) => {
               return this.renderProductInput(product, index);
             })}
             <div className="mt-4">
